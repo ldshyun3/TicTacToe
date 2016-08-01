@@ -183,24 +183,7 @@ public class TicTacToe : MonoBehaviour {
 
 
 
-    // Update is called once per frame
-    void Update()
-	{
 
- 		switch (progress) {
-		case GameProgress.Ready:
-			UpdateReady();
-			break;
-
-		case GameProgress.Turn:
-			UpdateTurn();
-			break;
-			
-		case GameProgress.GameOver:
-			UpdateGameOver();
-			break;			
-		}
-	}
 
     // turn = Mark.Circle;
     void OnGUI()
@@ -215,7 +198,7 @@ public class TicTacToe : MonoBehaviour {
 			// 필드와 기호를 그립니다.
 			DrawFieldAndMarks();
 			// 남은 시간을 그립니다.
-			if (turn == localMark) {
+			if (turn == localMark) {// 본인 턴인경우
 				DrawTime();
 			}
 			break;
@@ -315,26 +298,69 @@ public class TicTacToe : MonoBehaviour {
         }
     }
 
+    // 남은 시간 표시.
+    void DrawTime()
+    {
+        GUIStyle style = new GUIStyle();
+        style.fontSize = 35;
+        style.fontStyle = FontStyle.Bold;
+
+        // DoOwnTurn() 자신의 턴일때 timer -= Time.deltaTime;
+        string str = "Time : " + timer.ToString("F3");
+
+        //style.normal.textColor = (timer > 5.0f)? Color.black : Color.white;
+        //GUI.Label(new Rect(222, 5, 200, 100), str, style);
+
+        style.normal.textColor = (timer > 5.0f) ? Color.white : Color.red;
+        GUI.Label(new Rect(220, 3, 200, 100), str, style);
+    }
+
+    /// <summary>
+    /// ///////////////////// Update
+    /// </summary>
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        switch (progress)
+        {
+            case GameProgress.Ready:
+                UpdateReady();
+                break;
+
+            case GameProgress.Turn:
+                UpdateTurn();
+                break;
+
+            case GameProgress.GameOver:
+                UpdateGameOver();
+                break;
+        }
+    }
+
 
     void UpdateReady()
-	{
-		// 시합 시작 신호 표시를 기다립니다.
-		currentTime += Time.deltaTime;
+    {
+        // 시합 시작 신호 표시를 기다립니다.
+        currentTime += Time.deltaTime;
 
-		if (currentTime > waitTime) {
+        if (currentTime > waitTime)
+        {
             //BGM 재생 시작.
             GameObject bgm = GameObject.Find("BGM");
             bgm.GetComponent<AudioSource>().Play();
 
-			// 표시가 끝나면 게임 시작입니다.
-			progress = GameProgress.Turn;
-		}
-	}
+            // 표시가 끝나면 게임 시작입니다.
+            progress = GameProgress.Turn;
+        }
+    }
 
-	void UpdateTurn()
+    void UpdateTurn()
 	{
 		bool setMark = false;
 
+        // turn : 현재턴값을 의미 , 
 		if (turn == localMark) {
 			setMark = DoOwnTurn();
 
@@ -393,16 +419,7 @@ public class TicTacToe : MonoBehaviour {
 		timer = turnTime;
 	}
 	
-	// 게임 종료 처리
-	void UpdateGameOver()
-	{
-		step_count += Time.deltaTime;
-		if (step_count > 1.0f) {
-			// 게임을 종료합니다.
-			Reset();
-			isGameOver = true;
-		}
-	}
+
 
 	// 자신의 턴일 때의 처리.
 	bool DoOwnTurn()
@@ -638,21 +655,7 @@ public class TicTacToe : MonoBehaviour {
 
 
 
-	// 남은 시간 표시.
-	void DrawTime()
-	{
-		GUIStyle style = new GUIStyle();
-		style.fontSize = 35;
-		style.fontStyle = FontStyle.Bold;
-		
-		string str = "Time : " + timer.ToString("F3");
-		
-		//style.normal.textColor = (timer > 5.0f)? Color.black : Color.white;
-		//GUI.Label(new Rect(222, 5, 200, 100), str, style);
-		
-		style.normal.textColor = (timer > 5.0f)? Color.white : Color.red;
-		GUI.Label(new Rect(220, 3, 200, 100), str, style);
-	}
+
 
 	// 결과 표시.
 	void DrawWinner()
@@ -702,10 +705,20 @@ public class TicTacToe : MonoBehaviour {
 		}
 	}
 
+    // 게임 종료 처리
+    void UpdateGameOver()
+    {
+        step_count += Time.deltaTime;
+        if (step_count > 1.0f)
+        {
+            // 게임을 종료합니다.
+            Reset();
+            isGameOver = true;
+        }
+    }
 
-	
-	// 게임 종료 체크.
-	public bool IsGameOver()
+    // 게임 종료 체크.
+    public bool IsGameOver()
 	{
 		return isGameOver;
 	}
