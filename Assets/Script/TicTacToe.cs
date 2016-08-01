@@ -362,7 +362,7 @@ public class TicTacToe : MonoBehaviour {
 
         // turn : 현재턴값을 의미 , 
 		if (turn == localMark) {
-			setMark = DoOwnTurn();
+			setMark = DoOwnTurn(); //칸에 둘수있나,없나 여부값
 
             //둘 수 없는 장소를 누르면 클릭용 사운드효과를 냅니다.
             if (setMark == false && Input.GetMouseButtonDown(0)) {
