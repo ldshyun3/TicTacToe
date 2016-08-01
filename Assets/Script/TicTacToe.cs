@@ -38,7 +38,7 @@ public class TicTacToe : MonoBehaviour {
 	private const int 		rowNum = 3;
 
 	// 시합 시작 전의 신호표시 시간.
-	private const float		waitTime = 1.0f;
+	private const float		waitTime = 5.0f;
 
 	// 대기 시간.
 	private const float		turnTime = 10.0f;
@@ -409,9 +409,13 @@ public class TicTacToe : MonoBehaviour {
 		if (timer <= 0.0f) {
 			// 타임오버.
 			timer = 0.0f;
-			do {
-				index = UnityEngine.Random.Range(0, 8);
-			} while (spaces[index] != -1);
+            do {
+                index = UnityEngine.Random.Range(0, 8);
+
+                Debug.Log("DoOwnTurn() , index = UnityEngine.Random.Range(0, 8); index: " + index);
+            } while (
+                spaces[index] != -1
+            );
 		}
 		else {
 			// 마우스의 왼쪽 버튼의 눌린 상태를 감시합니다.
@@ -635,8 +639,8 @@ public class TicTacToe : MonoBehaviour {
 		
 		string str = "Time : " + timer.ToString("F3");
 		
-		style.normal.textColor = (timer > 5.0f)? Color.black : Color.white;
-		GUI.Label(new Rect(222, 5, 200, 100), str, style);
+		//style.normal.textColor = (timer > 5.0f)? Color.black : Color.white;
+		//GUI.Label(new Rect(222, 5, 200, 100), str, style);
 		
 		style.normal.textColor = (timer > 5.0f)? Color.white : Color.red;
 		GUI.Label(new Rect(220, 3, 200, 100), str, style);
