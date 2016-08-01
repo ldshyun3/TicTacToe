@@ -114,6 +114,7 @@ public class TicTacToe : MonoBehaviour {
         switch (state.type)
         {
             case NetEventType.Disconnect:
+                // None=0 , Ready=1 , Turn=2 , Reuslt=3
                 if (progress < GameProgress.Result && isGameOver == false)
                 {
                     progress = GameProgress.Disconnect;
@@ -137,7 +138,7 @@ public class TicTacToe : MonoBehaviour {
 		Reset();
 
 		isGameOver = false;
-		timer = turnTime;
+		timer = turnTime; // 10.0f
 	}
 
     // 게임 리셋.
@@ -449,8 +450,8 @@ public class TicTacToe : MonoBehaviour {
 		}
 
 		// 선택한 칸의 정보를 송신합니다.
-		byte[] buffer = new byte[1];
-		buffer[0] = (byte)index;
+		byte[] buffer = new byte[1]; // // Circle = 0, Cross = 1
+        buffer[0] = (byte)index;
 		m_transport.Send (buffer, buffer.Length);
 
 		return true;
@@ -472,9 +473,9 @@ public class TicTacToe : MonoBehaviour {
 		//Mark mark = (m_network.IsServer() == true)? Mark.Cross : Mark.Circle;
 
 		// 수신한 정보를 선택된 칸으로 변환합니다. 
-		int index = (int) buffer[0];
+		int index = (int) buffer[0]; // // Circle = 0, Cross = 1
 
-		Debug.Log("Recv:" + index + " [" + m_transport.IsServer() + "]");
+        Debug.Log("Recv:" + index + " [" + m_transport.IsServer() + "]");
 	
 		// 칸에 둡니다.
 		//bool ret = SetMarkToSpace(index, mark);
