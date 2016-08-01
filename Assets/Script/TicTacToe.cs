@@ -200,9 +200,60 @@ public class TicTacToe : MonoBehaviour {
 			break;			
 		}
 	}
-	
-	// 
-	void OnGUI()
+
+    // 필드와 기호를 그립니다.
+    void DrawFieldAndMarks()
+    {
+        float sx = SPACES_WIDTH;
+        float sy = SPACES_HEIGHT;
+
+        // 필드를 그립니다.
+        Rect rect = new Rect(Screen.width / 2 - WINDOW_WIDTH * 0.5f,
+                             Screen.height / 2 - WINDOW_HEIGHT * 0.5f,
+                             WINDOW_WIDTH,
+                             WINDOW_HEIGHT);
+
+        // 바둑판 배경그림
+        Graphics.DrawTexture(rect, fieldTexture.texture);
+
+        // 필드의 왼쪽 위 모퉁이를 기점으로 한 좌표계로 변환합니다. 
+        float left = ((float)Screen.width - sx) * 0.5f;
+        float top = ((float)Screen.height - sy) * 0.5f;
+
+        // 기호를 그립니다. 
+        for (int index = 0; index < spaces.Length; ++index)
+        {
+            Debug.Log("DrawFieldAndMarks() , index: " + index + " , spaces[] = " + spaces[index]);
+            if (spaces[index] != -1)
+            {
+                int x = index % rowNum;
+                int y = index / rowNum;
+
+                float divide = (float)rowNum;
+                float px = left + x * sx / divide;
+                float py = top + y * sy / divide;
+
+                Texture texture = (spaces[index] == 0) ? circleTexture.texture : crossTexture.texture;
+
+                float ofs = sx / divide * 0.1f;
+
+                Graphics.DrawTexture(new Rect(px + ofs, py + ofs, sx * 0.8f / divide, sy * 0.8f / divide), texture);
+            }
+        }
+
+        // 순서 텍스처 표시.
+        if (localMark == turn)
+        {
+            float offset = (localMark == Mark.Circle) ? -94.0f : sx + 36.0f;
+            rect = new Rect(left + offset, top + 5.0f, 68.0f, 136.0f);
+            Graphics.DrawTexture(rect, youTexture.texture);
+        }
+    }
+
+
+
+    // 
+    void OnGUI()
 	{
 		switch (progress) {
 		case GameProgress.Ready:
@@ -567,48 +618,7 @@ public class TicTacToe : MonoBehaviour {
 
 
 
-	// 필드와 기호를 그립니다.
-	void DrawFieldAndMarks()
-	{
-		float sx = SPACES_WIDTH;
-		float sy = SPACES_HEIGHT;
-		
-		// 필드를 그립니다.
-		Rect rect = new Rect(Screen.width / 2 - WINDOW_WIDTH * 0.5f, 
-		                     Screen.height / 2 - WINDOW_HEIGHT * 0.5f, 
-		                     WINDOW_WIDTH, 
-		                     WINDOW_HEIGHT);
-		Graphics.DrawTexture(rect, fieldTexture.texture);
-		
-		// 필드의 왼쪽 위 모퉁이를 기점으로 한 좌표계로 변환합니다. 
-		float left = ((float)Screen.width - sx) * 0.5f;
-		float top = ((float)Screen.height - sy) * 0.5f;
 
-		// 기호를 그립니다. 
-		for (int index = 0; index < spaces.Length; ++index) {
-			if (spaces[index] != -1) {
-				int x = index % rowNum;
-				int y = index / rowNum;
-				
-				float divide = (float)rowNum;
-				float px = left + x * sx / divide;
-				float py = top + y * sy / divide;
-				
-				Texture texture = (spaces[index] == 0)? circleTexture.texture : crossTexture.texture;
-				
-				float ofs = sx / divide * 0.1f;
-				
-				Graphics.DrawTexture(new Rect(px+ofs, py+ofs, sx * 0.8f / divide, sy* 0.8f / divide), texture);
-			}
-		}
-
-		// 순서 텍스처 표시.
-		if (localMark == turn) {
-			float offset = (localMark == Mark.Circle)? -94.0f : sx + 36.0f;
-			rect = new Rect(left + offset, top + 5.0f, 68.0f, 136.0f);
-			Graphics.DrawTexture(rect, youTexture.texture);
-		}
-	}
 
 	// 남은 시간 표시.
 	void DrawTime()
