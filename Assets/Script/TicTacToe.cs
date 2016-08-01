@@ -200,8 +200,8 @@ public class TicTacToe : MonoBehaviour {
 			break;			
 		}
 	}
-    
-    // 
+
+    // turn = Mark.Circle;
     void OnGUI()
 	{
 		switch (progress) {
@@ -302,7 +302,10 @@ public class TicTacToe : MonoBehaviour {
             }
         }
 
-        // 순서 텍스처 표시.
+        // 순서 텍스처 표시. 
+        // 기본값: turn = Mark.Circle; 
+        // 서버: localMark = Mark.Circle; 
+        // 클라이언트: localMark = Mark.Cross;
         if (localMark == turn)
         {
             float offset = (localMark == Mark.Circle) ? -94.0f : sx + 36.0f;
