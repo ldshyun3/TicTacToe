@@ -368,7 +368,9 @@ public class TicTacToe : MonoBehaviour {
 		
 		// 기호의 나열을 체크합니다.
 		winner = CheckInPlacingMarks();
+
 		if (winner != Winner.None) {
+
             //승리한 경우는 사운드효과를 냅니다.
             if ((winner == Winner.Circle && localMark == Mark.Circle)
                 || (winner == Winner.Cross && localMark == Mark.Cross)) {
@@ -376,6 +378,7 @@ public class TicTacToe : MonoBehaviour {
                 audio.clip = se_win;
                 audio.Play();
             }
+
             //BGM재생종료.
             GameObject bgm = GameObject.Find("BGM");
             bgm.GetComponent<AudioSource>().Stop();
@@ -414,10 +417,11 @@ public class TicTacToe : MonoBehaviour {
 
                 Debug.Log("DoOwnTurn() , index = UnityEngine.Random.Range(0, 8); index: " + index);
             } while (
-                spaces[index] != -1
+                spaces[index] != -1 // -1이 아닐때까지 랜덤돌림.
             );
 		}
-		else {
+		else
+        {
 			// 마우스의 왼쪽 버튼의 눌린 상태를 감시합니다.
 			bool isClicked = Input.GetMouseButtonDown(0);
 			if (isClicked == false) {
@@ -438,6 +442,7 @@ public class TicTacToe : MonoBehaviour {
 
 		// 칸에 둡니다.
 		bool ret = SetMarkToSpace(index, localMark);
+
 		if (ret == false) {
 			// 둘 수 없습니다.
 			return false;
@@ -520,8 +525,8 @@ public class TicTacToe : MonoBehaviour {
 	{
 		if (spaces[index] == -1) {
 			// 미선택된 칸이므로 놓을 수 없습니다.
-			spaces[index] = (int) mark;
-			return true;
+			spaces[index] = (int) mark; // Circle = 0, Cross = 1
+            return true;
 		}
 		
 		// 이미 놓여 있습니다.
@@ -531,7 +536,9 @@ public class TicTacToe : MonoBehaviour {
 	// 기호 배열 체크.
 	Winner CheckInPlacingMarks()
 	{
-		string spaceString = "";
+        // // Circle = 0, Cross = 1
+
+        string spaceString = "";
 		for (int i = 0; i < spaces.Length; ++i) {
 			spaceString += spaces[i] + "|";
 			if (i % rowNum == rowNum - 1) {
