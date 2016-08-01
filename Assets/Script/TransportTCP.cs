@@ -89,121 +89,9 @@ public class TransportTCP : MonoBehaviour {
         return LaunchThread();
     }
 
-	// 대기 정료.
-    public void StopServer()
-    {
-		m_threadLoop = false;
-        if (m_thread != null) {
-            m_thread.Join();
-            m_thread = null;
-        }
-
-        Disconnect();
-
-        if (m_listener != null) {
-            m_listener.Close();
-            m_listener = null;
-        }
-
-        m_isServer = false;
-
-        Debug.Log("Server stopped.");
-    }
 
 
-    // 접속.
-    public bool Connect(string address, int port)
-    {
-        Debug.Log("TransportTCP connect called.");
 
-        if (m_listener != null) {
-            return false;
-        }
-
-		bool ret = false;
-        try {
-            m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            m_socket.NoDelay = true;
-            m_socket.Connect(address, port);
-			ret = LaunchThread();
-		}
-        catch {
-            m_socket = null;
-        }
-
-		if (ret == true) {
-			m_isConnected = true;
-			Debug.Log("Connection success.");
-		}
-		else {
-			m_isConnected = false;
-			Debug.Log("Connect fail");
-		}
-
-        if (m_handler != null) {
-            // 접속 결과를 알립니다.
-			NetEventState state = new NetEventState();
-			state.type = NetEventType.Connect;
-			state.result = (m_isConnected == true) ? NetEventResult.Success : NetEventResult.Failure;
-            m_handler(state);
-			Debug.Log("event handler called");
-        }
-
-        return m_isConnected;
-    }
-
-	// 절단.
-    public void Disconnect() {
-        m_isConnected = false;
-
-        if (m_socket != null) {
-            // 소켓 닫기.
-            m_socket.Shutdown(SocketShutdown.Both);
-            m_socket.Close();
-            m_socket = null;
-
-	        // 접속 종료를 알립니다.
-	        if (m_handler != null) {
-				NetEventState state = new NetEventState();
-				state.type = NetEventType.Disconnect;
-				state.result = NetEventResult.Success;
-				m_handler(state);
-	        }
-		}
-
-    }
-
-    // 송신처리.
-    public int Send(byte[] data, int size)
-	{
-		if (m_sendQueue == null) {
-			return 0;
-		}
-
-        return m_sendQueue.Enqueue(data, size);
-    }
-
-    // 수신처리.
-    public int Receive(ref byte[] buffer, int size)
-	{
-		if (m_recvQueue == null) {
-			return 0;
-		}
-
-        return m_recvQueue.Dequeue(ref buffer, size);
-    }
-
-	// 이벤트 함수 등록.
-    public void RegisterEventHandler(EventHandler handler)
-    {
-        m_handler += handler;
-    }
-
-	// 이벤트 통지 함수 삭제.
-    public void UnregisterEventHandler(EventHandler handler)
-    {
-        m_handler -= handler;
-    }
 
 	// 스레드 시작 함수.
 	bool LaunchThread()
@@ -221,6 +109,8 @@ public class TransportTCP : MonoBehaviour {
 		
 		return true;
 	}
+
+
 
 	// 스레드 측의 송수신 처리.
     public void Dispatch()
@@ -308,13 +198,161 @@ public class TransportTCP : MonoBehaviour {
         }
     }
 
-	// 서버인지 확인.
-	public bool IsServer() {
-		return m_isServer;
-	}
-	
+
+
+
+
+    // 송신처리.
+    public int Send(byte[] data, int size)
+    {
+        if (m_sendQueue == null)
+        {
+            return 0;
+        }
+
+        return m_sendQueue.Enqueue(data, size);
+    }
+
+    // 수신처리.
+    public int Receive(ref byte[] buffer, int size)
+    {
+        if (m_recvQueue == null)
+        {
+            return 0;
+        }
+
+        return m_recvQueue.Dequeue(ref buffer, size);
+    }
+
+
+
+
+    // 접속.
+    public bool Connect(string address, int port)
+    {
+        Debug.Log("TransportTCP connect called.");
+
+        if (m_listener != null)
+        {
+            return false;
+        }
+
+        bool ret = false;
+        try
+        {
+            m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            m_socket.NoDelay = true;
+            m_socket.Connect(address, port);
+            ret = LaunchThread();
+        }
+        catch
+        {
+            m_socket = null;
+        }
+
+        if (ret == true)
+        {
+            m_isConnected = true;
+            Debug.Log("Connection success.");
+        }
+        else
+        {
+            m_isConnected = false;
+            Debug.Log("Connect fail");
+        }
+
+        if (m_handler != null)
+        {
+            // 접속 결과를 알립니다.
+            NetEventState state = new NetEventState();
+            state.type = NetEventType.Connect;
+            state.result = (m_isConnected == true) ? NetEventResult.Success : NetEventResult.Failure;
+            m_handler(state);
+            Debug.Log("event handler called");
+        }
+
+        return m_isConnected;
+    }
+
+
+    // 절단.
+    public void Disconnect()
+    {
+        m_isConnected = false;
+
+        if (m_socket != null)
+        {
+            // 소켓 닫기.
+            m_socket.Shutdown(SocketShutdown.Both);
+            m_socket.Close();
+            m_socket = null;
+
+            // 접속 종료를 알립니다.
+            if (m_handler != null)
+            {
+                NetEventState state = new NetEventState();
+                state.type = NetEventType.Disconnect;
+                state.result = NetEventResult.Success;
+                m_handler(state);
+            }
+        }
+
+    }
+
+
+
+    // 대기 정료.
+    public void StopServer()
+    {
+        m_threadLoop = false;
+        if (m_thread != null)
+        {
+            m_thread.Join();
+            m_thread = null;
+        }
+
+        Disconnect();
+
+        if (m_listener != null)
+        {
+            m_listener.Close();
+            m_listener = null;
+        }
+
+        m_isServer = false;
+
+        Debug.Log("Server stopped.");
+    }
+
+
+
+
+
+
+
+
+    // 이벤트 함수 등록.
+    public void RegisterEventHandler(EventHandler handler)
+    {
+        m_handler += handler;
+    }
+
+    // 이벤트 통지 함수 삭제.
+    public void UnregisterEventHandler(EventHandler handler)
+    {
+        m_handler -= handler;
+    }
+
+
+    // 서버인지 확인.
+    public bool IsServer()
+    {
+        return m_isServer;
+    }
+
     // 접속 확인.
-    public bool IsConnected() {
+    public bool IsConnected()
+    {
         return m_isConnected;
     }
 

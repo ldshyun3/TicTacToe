@@ -106,8 +106,25 @@ public class TicTacToe : MonoBehaviour {
 	private static float WINDOW_WIDTH = 640.0f;
 	private static float WINDOW_HEIGHT = 480.0f;
 
-	// Use this for initialization
-	void Start () {
+
+
+    // 이벤트 발생 시의 콜백 함수.
+    public void EventCallback(NetEventState state)
+    {
+        switch (state.type)
+        {
+            case NetEventType.Disconnect:
+                if (progress < GameProgress.Result && isGameOver == false)
+                {
+                    progress = GameProgress.Disconnect;
+                }
+                break;
+        }
+    }
+
+    
+    // Use this for initialization
+    void Start () {
 		
 		// Network 클래스의 컴포넌트 가져오기.
 		GameObject obj = GameObject.Find("Network");
@@ -118,12 +135,55 @@ public class TicTacToe : MonoBehaviour {
 
 		// 게임을 초기화합니다.
 		Reset();
+
 		isGameOver = false;
 		timer = turnTime;
 	}
-	
-	// Update is called once per frame
-	void Update()
+
+    // 게임 리셋.
+    void Reset()
+    {
+        //turn = Turn.Own;
+        turn = Mark.Circle;
+        progress = GameProgress.None;
+
+        // 미선택으로 하고 초기화합니다.
+        for (int i = 0; i < spaces.Length; ++i)
+        {
+            spaces[i] = -1;
+        }
+    }
+
+    // 게임 시작.
+    public void GameStart()
+    {
+        // 게임 시작 상태로 합니다.
+        progress = GameProgress.Ready;
+
+        // 서버가 먼저 하게 설정합니다.
+        turn = Mark.Circle;
+
+        // 자신과 상대의 기호를 설정합니다.
+        if (m_transport.IsServer() == true)
+        {
+            localMark = Mark.Circle;
+            remoteMark = Mark.Cross;
+        }
+        else
+        {
+            localMark = Mark.Cross;
+            remoteMark = Mark.Circle;
+        }
+
+        // 이전 설정을 클리어합니다.
+        isGameOver = false;
+    }
+
+
+
+
+    // Update is called once per frame
+    void Update()
 	{
 
  		switch (progress) {
@@ -505,18 +565,7 @@ public class TicTacToe : MonoBehaviour {
 		return Winner.None;
 	}
 
-	// 게임 리셋.
-	void Reset()
-	{
-		//turn = Turn.Own;
-		turn = Mark.Circle;
-		progress = GameProgress.None;
-		
-		// 미선택으로 하고 초기화합니다.
-		for (int i = 0; i < spaces.Length; ++i) {
-			spaces[i] = -1;	
-		}
-	}
+
 
 	// 필드와 기호를 그립니다.
 	void DrawFieldAndMarks()
@@ -625,28 +674,7 @@ public class TicTacToe : MonoBehaviour {
 		}
 	}
 
-	// 게임 시작.
-	public void GameStart()
-	{
-		// 게임 시작 상태로 합니다.
-		progress = GameProgress.Ready;
 
-		// 서버가 먼저 하게 설정합니다.
-		turn = Mark.Circle;
-
-		// 자신과 상대의 기호를 설정합니다.
-		if (m_transport.IsServer() == true) {
-			localMark = Mark.Circle;
-			remoteMark = Mark.Cross;
-		}
-		else {
-			localMark = Mark.Cross;
-			remoteMark = Mark.Circle;
-		}
-
-		// 이전 설정을 클리어합니다.
-		isGameOver = false;
-	}
 	
 	// 게임 종료 체크.
 	public bool IsGameOver()
@@ -654,15 +682,5 @@ public class TicTacToe : MonoBehaviour {
 		return isGameOver;
 	}
 
-	// 이벤트 발생 시의 콜백 함수.
-	public void EventCallback(NetEventState state)
-	{
-		switch (state.type) {
-		case NetEventType.Disconnect:
-			if (progress < GameProgress.Result && isGameOver == false) {
-				progress = GameProgress.Disconnect;
-			}
-			break;
-		}
-	}
+
 }
